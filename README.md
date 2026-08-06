@@ -5,8 +5,9 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Paper](https://img.shields.io/badge/Paper-26.2-blueviolet)](https://papermc.io)
 [![Java](https://img.shields.io/badge/Java-25-orange)](https://adoptium.net)
+[![PlaceholderAPI](https://img.shields.io/badge/PAPI-2.11.7-yellow)](https://www.spigotmc.org/resources/placeholderapi.6245/)
 
-Bukkit 服务端插件 — 作为 [Hyper Heartrate](https://github.com/ChaYeWuu/Hyper-Heartrate) Fabric 模组的服务端中转，接收并转发玩家心率数据。
+Bukkit 服务端插件 — 作为 [Hyper Heartrate](https://github.com/ChaYeWuu/Hyper-Heartrate) Fabric 模组的服务端中转，接收并转发玩家心率数据，支持 PlaceholderAPI 变量。
 
 ## 概述
 
@@ -67,13 +68,34 @@ cd Hyper-Heartrate-Bukkit
 
 ```
 src/main/java/com/chayewuu/hyperheartratebukkit/
-├── HeartRateBukkitPlugin.java    # 插件主类，注册通道与事件
+├── HeartRateBukkitPlugin.java          # 插件主类，注册通道与事件
+├── HeartRatePlaceholderExpansion.java  # PlaceholderAPI 变量扩展
 ├── util/
-│   └── VarIntUtil.java           # VarInt/UUID 编解码（与 Minecraft 协议兼容）
+│   └── VarIntUtil.java                 # VarInt/UUID 编解码（与 Minecraft 协议兼容）
 └── network/
-    ├── RemoteHeartRateStore.java  # 远程心率存储（10秒过期）
-    └── HeartRateMessageListener.java  # 消息监听与中转
+    ├── RemoteHeartRateStore.java       # 远程心率存储（10秒过期）
+    └── HeartRateMessageListener.java   # 消息监听与中转
 ```
+
+## PlaceholderAPI 变量
+
+本插件提供以下 PlaceholderAPI 变量（需服务端安装 [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/)）：
+
+| 变量 | 说明 | 示例 |
+|------|------|------|
+| `%hyperheartrate_heartrate%` | 当前玩家心率 | `72` |
+| `%hyperheartrate_heartrate_<玩家名>%` | 指定玩家心率 | `85` |
+| `%hyperheartrate_heartrate_color%` | 带颜色代码的心率 | `§a72` |
+| `%hyperheartrate_heartrate_color_<玩家名>%` | 指定玩家的带色心率 | `§e100` |
+| `%hyperheartrate_status%` | 当前玩家心率状态 | `§a有数据` |
+| `%hyperheartrate_status_<玩家名>%` | 指定玩家心率状态 | `§7无数据` |
+
+### 颜色规则
+
+- **< 60 BPM** → `§b` 蓝色（心动过缓）
+- **60–100 BPM** → `§a` 绿色（正常）
+- **100–140 BPM** → `§e` 黄色（偏高）
+- **> 140 BPM** → `§c` 红色（过高）
 
 ## 许可
 

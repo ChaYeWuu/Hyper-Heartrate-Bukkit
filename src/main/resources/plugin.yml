@@ -1,5 +1,5 @@
 name: Hyper-Heartrate-Bukkit
-version: "1.0.0"
+version: "1.1.0"
 main: com.chayewuu.hyperheartratebukkit.HeartRateBukkitPlugin
 api-version: "26.2"
 description: "Bukkit 侧的心率数据中转插件 — 接收玩家心率并广播给附近玩家"
