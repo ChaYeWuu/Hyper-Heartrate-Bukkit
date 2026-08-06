@@ -36,7 +36,7 @@ public class HeartRateBukkitPlugin extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         getLogger().info("============================================");
-        getLogger().info("  Hyper-Heartrate-Bukkit 正在加载...");
+        getLogger().info("  HyperHeart-Bukkit 正在加载...");
         getLogger().info("============================================");
 
         // 初始化存储
@@ -61,7 +61,7 @@ public class HeartRateBukkitPlugin extends JavaPlugin implements Listener {
 
         getLogger().info("C2S 通道已注册: " + HeartRateMessageListener.CHANNEL_C2S);
         getLogger().info("S2C 通道已注册: " + HeartRateMessageListener.CHANNEL_S2C);
-        getLogger().info("Hyper-Heartrate-Bukkit 已启用，版本: " + getPluginMeta().getVersion());
+        getLogger().info("HyperHeart-Bukkit 已启用，版本: " + getPluginMeta().getVersion());
     }
 
     /**
@@ -83,7 +83,7 @@ public class HeartRateBukkitPlugin extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
-        getLogger().info("正在卸载 Hyper-Heartrate-Bukkit...");
+        getLogger().info("正在卸载 HyperHeart-Bukkit...");
 
         // 取消注册插件消息通道
         Bukkit.getMessenger().unregisterIncomingPluginChannel(this);
@@ -100,7 +100,7 @@ public class HeartRateBukkitPlugin extends JavaPlugin implements Listener {
             store.clear();
         }
 
-        getLogger().info("Hyper-Heartrate-Bukkit 已卸载");
+        getLogger().info("HyperHeart-Bukkit 已卸载");
     }
 
     /**
