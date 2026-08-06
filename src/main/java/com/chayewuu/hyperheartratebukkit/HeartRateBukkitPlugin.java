@@ -9,8 +9,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.logging.Level;
-
 /**
  * Hyper-Heartrate Bukkit 插件主类。
  * <p>
@@ -33,6 +31,7 @@ public class HeartRateBukkitPlugin extends JavaPlugin implements Listener {
 
     private HeartRateMessageListener messageListener;
     private RemoteHeartRateStore store;
+    private HeartRatePlaceholderExpansion placeholderExpansion;
 
     @Override
     public void onEnable() {
@@ -57,9 +56,29 @@ public class HeartRateBukkitPlugin extends JavaPlugin implements Listener {
         // 注册事件监听器（玩家退出清理）
         Bukkit.getPluginManager().registerEvents(this, this);
 
+        // 注册 PlaceholderAPI 变量扩展
+        registerPlaceholderExpansion();
+
         getLogger().info("C2S 通道已注册: " + HeartRateMessageListener.CHANNEL_C2S);
         getLogger().info("S2C 通道已注册: " + HeartRateMessageListener.CHANNEL_S2C);
         getLogger().info("Hyper-Heartrate-Bukkit 已启用，版本: " + getPluginMeta().getVersion());
+    }
+
+    /**
+     * 注册 PlaceholderAPI 变量扩展。
+     * <p>如果服务端未安装 PlaceholderAPI，跳过注册并记录日志。</p>
+     */
+    private void registerPlaceholderExpansion() {
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) {
+            getLogger().info("PlaceholderAPI 未安装，跳过变量扩展注册");
+            return;
+        }
+        this.placeholderExpansion = new HeartRatePlaceholderExpansion(this);
+        if (placeholderExpansion.register()) {
+            getLogger().info("PlaceholderAPI 变量扩展已注册: %hyperheartrate_heartrate%");
+        } else {
+            getLogger().warning("PlaceholderAPI 变量扩展注册失败");
+        }
     }
 
     @Override
@@ -69,6 +88,12 @@ public class HeartRateBukkitPlugin extends JavaPlugin implements Listener {
         // 取消注册插件消息通道
         Bukkit.getMessenger().unregisterIncomingPluginChannel(this);
         Bukkit.getMessenger().unregisterOutgoingPluginChannel(this);
+
+        // 注销 PlaceholderAPI 变量扩展
+        if (placeholderExpansion != null) {
+            placeholderExpansion.unregister();
+            placeholderExpansion = null;
+        }
 
         // 清理所有心率数据
         if (store != null) {
