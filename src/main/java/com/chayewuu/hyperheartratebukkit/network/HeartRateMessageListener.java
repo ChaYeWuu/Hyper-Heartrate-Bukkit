@@ -1,6 +1,7 @@
 package com.chayewuu.hyperheartratebukkit.network;
 
 import com.chayewuu.hyperheartratebukkit.HeartRateBukkitPlugin;
+import com.chayewuu.hyperheartratebukkit.integration.NickPlusBridge;
 import com.chayewuu.hyperheartratebukkit.util.VarIntUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -55,11 +56,20 @@ public class HeartRateMessageListener implements PluginMessageListener {
             UUID senderUuid = sender.getUniqueId();
             plugin.getLogger().fine("收到心率数据: " + sender.getName() + " = " + heartRate + " BPM");
 
-            // 存入本地存储
+            // 存入本地存储（始终使用真实 UUID）
             store.updateHeartRate(senderUuid, heartRate);
 
-            // 广播给附近安装了模组的玩家
-            broadcastToNearbyPlayers(sender, senderUuid, heartRate);
+            // 检测 NickPlus 匿名身份：如果玩家使用了 Fake UUID，广播时用 Fake UUID 发送
+            UUID broadcastUuid = senderUuid;
+            UUID fakeUuid = NickPlusBridge.getFakeUuid(sender);
+            if (fakeUuid != null) {
+                broadcastUuid = fakeUuid;
+                plugin.getLogger().fine("检测到 NickPlus 匿名: " + sender.getName()
+                        + " 真实 UUID=" + senderUuid + " → Fake UUID=" + fakeUuid);
+            }
+
+            // 广播给附近安装了模组的玩家（使用 broadcastUuid，NickPlus 匿名时用 Fake UUID）
+            broadcastToNearbyPlayers(sender, broadcastUuid, heartRate);
 
         } catch (IllegalArgumentException e) {
             plugin.getLogger().log(Level.WARNING, "解析心率数据失败: " + e.getMessage(), e);
@@ -78,18 +88,18 @@ public class HeartRateMessageListener implements PluginMessageListener {
      * @param senderUuid 发送者 UUID
      * @param heartRate  心率值
      */
-    private void broadcastToNearbyPlayers(Player sender, UUID senderUuid, int heartRate) {
+    private void broadcastToNearbyPlayers(Player sender, UUID broadcastUuid, int heartRate) {
         if (heartRate <= 0) {
             return; // 无效心率不广播
         }
 
         // 构造 S2C 数据：UUID(16字节) + VarInt(heartRate)
-        byte[] s2cPayload = buildS2CPayload(senderUuid, heartRate);
+        byte[] s2cPayload = buildS2CPayload(broadcastUuid, heartRate);
 
         Collection<? extends Player> players = Bukkit.getOnlinePlayers();
         for (Player other : players) {
-            // 不发给自己
-            if (other.getUniqueId().equals(senderUuid)) {
+            // 不发给自己（使用 Player 对象引用，避免 NickPlus Fake UUID 导致自检失效）
+            if (other == sender) {
                 continue;
             }
 
