@@ -90,16 +90,20 @@ public class HeartRateMessageListener implements PluginMessageListener {
      */
     private void broadcastToNearbyPlayers(Player sender, UUID broadcastUuid, int heartRate) {
         if (heartRate <= 0) {
-            return; // 无效心率不广播
+            return;
         }
 
         // 构造 S2C 数据：UUID(16字节) + VarInt(heartRate)
         byte[] s2cPayload = buildS2CPayload(broadcastUuid, heartRate);
 
+        // 判断是否使用了 NickPlus Fake UUID
+        boolean isNicked = !broadcastUuid.equals(sender.getUniqueId());
+
         Collection<? extends Player> players = Bukkit.getOnlinePlayers();
         for (Player other : players) {
-            // 不发给自己（使用 Player 对象引用，避免 NickPlus Fake UUID 导致自检失效）
-            if (other == sender) {
+            // 非匿名玩家：不发给自己（Fabric 原版逻辑，避免重复处理）
+            // 匿名玩家：也发给自己，因为客户端看到自己的 Fake UUID 需要匹配
+            if (!isNicked && other == sender) {
                 continue;
             }
 
