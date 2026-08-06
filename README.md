@@ -6,8 +6,9 @@
 [![Paper](https://img.shields.io/badge/Paper-26.2-blueviolet)](https://papermc.io)
 [![Java](https://img.shields.io/badge/Java-25-orange)](https://adoptium.net)
 [![PlaceholderAPI](https://img.shields.io/badge/PAPI-2.11.7-yellow)](https://www.spigotmc.org/resources/placeholderapi.6245/)
+[![NickPlus](https://img.shields.io/badge/NickPlus-%E5%85%BC%E5%AE%B9-brightgreen)](https://github.com/Shallow-Y/NickPlus)
 
-Bukkit 服务端插件 — 作为 [Hyper Heartrate](https://github.com/ChaYeWuu/Hyper-Heartrate) Fabric 模组的服务端中转，接收并转发玩家心率数据，支持 PlaceholderAPI 变量。
+Bukkit 服务端插件 — 作为 [Hyper Heartrate](https://github.com/ChaYeWuu/Hyper-Heartrate) Fabric 模组的服务端中转，接收并转发玩家心率数据，支持 PlaceholderAPI 变量，兼容 NickPlus 匿名身份伪装。
 
 ## 概述
 
@@ -72,10 +73,31 @@ src/main/java/com/chayewuu/hyperheartratebukkit/
 ├── HeartRatePlaceholderExpansion.java  # PlaceholderAPI 变量扩展
 ├── util/
 │   └── VarIntUtil.java                 # VarInt/UUID 编解码（与 Minecraft 协议兼容）
-└── network/
-    ├── RemoteHeartRateStore.java       # 远程心率存储（10秒过期）
-    └── HeartRateMessageListener.java   # 消息监听与中转
+├── network/
+│   ├── RemoteHeartRateStore.java       # 远程心率存储（10秒过期）
+│   └── HeartRateMessageListener.java   # 消息监听与中转
+└── integration/
+    └── NickPlusBridge.java             # NickPlus Fake UUID 兼容桥接
 ```
+
+## NickPlus 兼容
+
+本插件自动兼容 [NickPlus](https://github.com/Shallow-Y/NickPlus) 匿名身份伪装插件。
+
+当玩家使用 `/nick` 匿名后，NickPlus 会为其生成一个 Fake UUID，客户端看到的是伪装身份。本插件在 S2C 广播时自动检测并替换为 Fake UUID，确保：
+
+- **其他玩家**：TAB 列表和 nametag 上的心率正确显示（收到 Fake UUID 匹配）
+- **自己**：匿名玩家自己的 TAB 列表也能看到自己的心率（S2C 也发给自己）
+- **存储**：`RemoteHeartRateStore` 始终使用真实 UUID，Placeholder 查询不受影响
+
+### 依赖关系
+
+```
+NickPlus ──→ PlaceholderAPI ──→ Hyper-Heartrate-Bukkit
+  (提供 %nickplus_fakeuuid%)    (通过 PAPI 桥接读取)
+```
+
+无需额外配置，安装 PlaceholderAPI 和 NickPlus 后自动生效。
 
 ## PlaceholderAPI 变量
 
