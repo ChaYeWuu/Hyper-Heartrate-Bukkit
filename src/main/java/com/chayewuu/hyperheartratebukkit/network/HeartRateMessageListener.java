@@ -1,7 +1,7 @@
 package com.chayewuu.hyperheartratebukkit.network;
 
 import com.chayewuu.hyperheartratebukkit.HeartRateBukkitPlugin;
-import com.chayewuu.hyperheartratebukkit.integration.NickPlusBridge;
+import com.chayewuu.hyperheartratebukkit.integration.HyperNickBridge;
 import com.chayewuu.hyperheartratebukkit.util.VarIntUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -59,12 +59,12 @@ public class HeartRateMessageListener implements PluginMessageListener {
             // 存入本地存储（始终使用真实 UUID）
             store.updateHeartRate(senderUuid, heartRate);
 
-            // 检测 NickPlus 匿名身份：如果玩家使用了 Fake UUID，广播时用 Fake UUID 发送
+            // 检测 HyperNick 匿名身份：如果玩家使用了 Fake UUID，广播时用 Fake UUID 发送
             UUID broadcastUuid = senderUuid;
-            UUID fakeUuid = NickPlusBridge.getFakeUuid(sender);
+            UUID fakeUuid = HyperNickBridge.getFakeUuid(sender);
             if (fakeUuid != null) {
                 broadcastUuid = fakeUuid;
-                plugin.getLogger().fine("检测到 NickPlus 匿名: " + sender.getName()
+                plugin.getLogger().fine("检测到 HyperNick 匿名: " + sender.getName()
                         + " 真实 UUID=" + senderUuid + " → Fake UUID=" + fakeUuid);
             }
 

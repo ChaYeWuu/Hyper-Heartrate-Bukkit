@@ -1,10 +1,10 @@
-name: Hyper-Heartrate-Bukkit
+name: HyperHeart-Bukkit
 version: "1.2.0"
 main: com.chayewuu.hyperheartratebukkit.HeartRateBukkitPlugin
 api-version: "26.2"
 description: "Bukkit 侧的心率数据中转插件 — 接收玩家心率并广播给附近玩家"
 author: "茶叶Wuu"
-website: "https://github.com/ChaYeWuu/Hyper-Heartrate-Bukkit"
+website: "https://github.com/ChaYeWuu/HyperHeart-Bukkit"
 softdepend: [PlaceholderAPI]
 
 # 插件消息通道 — 与 Fabric 模组 hyper-heartrate:hr_c2s / hyper-heartrate:hr_s2c 对齐

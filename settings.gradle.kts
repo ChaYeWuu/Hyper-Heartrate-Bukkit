@@ -1,1 +1,1 @@
-rootProject.name = "Hyper-Heartrate-Bukkit"
+rootProject.name = "HyperHeart-Bukkit"

@@ -42,7 +42,7 @@ tasks {
 
     shadowJar {
         archiveClassifier.set("")
-        archiveFileName.set("Hyper-Heartrate-Bukkit-${project.version}.jar")
+        archiveFileName.set("HyperHeart-Bukkit-${project.version}.jar")
     }
 
     build {
